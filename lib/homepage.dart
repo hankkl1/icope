@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:icope/pages/nutrition.dart';
-import 'package:icope/pages/mobility.dart';
+import 'package:icope/pages/nutrition/nutrition.dart';
+import 'package:icope/pages/mobility/mobility.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

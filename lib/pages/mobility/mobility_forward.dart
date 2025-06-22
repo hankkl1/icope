@@ -1,0 +1,165 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:icope/enterpage.dart';
+import 'package:icope/pages/mobility/function_pages/question_section.dart';
+import 'package:icope/pages/mobility/function_pages/walking_speed.dart';
+import 'package:icope/pages/mobility/function_pages/sit_stand.dart';
+import 'package:icope/suggestionpage.dart';
+import 'package:icope/suggestionsdata.dart';
+
+class MobilityForward extends StatefulWidget {
+  const MobilityForward({super.key});
+
+  @override
+  State<MobilityForward> createState() => _MobilityForwardState();
+}
+
+class _MobilityForwardState extends State<MobilityForward> {
+
+  bool balanceTest = true;
+
+  final List<String> _questions = [
+    "請試著並排站立至少10秒",
+    "請試著半並排站立至少10秒",
+    "請試著直線站立至少10秒",
+    "步行速度測試",
+    "椅子起站測試",
+  ];
+
+  final List<String> _pictures = [
+    "assets/images/sbsp.png",
+    "assets/images/stsp.png",
+    "assets/images/tsp.png",
+  ];
+
+  int _currentIndex = 0;
+  int _score = 0;
+
+  void _completeTest(){
+    if (_score <= 9) {
+      final selectedSuggestions = suggestionGroups['mobility_low'] ?? [];
+
+      EnterPage.historyItems.add(selectedSuggestions);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SuggestionPage(suggestions: selectedSuggestions),
+        ),
+      );
+    } else {
+      Navigator.pop(context);
+    }
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.indigo),
+        title: Text(
+          "進一步檢測",
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Row(
+              children: List.generate(_questions.length, (index) {
+                final isActive = index <= _currentIndex;
+                return Expanded(
+                  child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 4),
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: isActive ? Colors.amber[300] : Colors.grey[300],
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                  ),
+                );
+              }),
+            ),
+            if (_currentIndex < 3) ...[
+              QuestionsSection(
+                questionText: _questions[_currentIndex],
+                questionPic: _pictures[_currentIndex],
+                currentStep: _currentIndex,
+                onTestFinished: (seconds, score) {
+                  setState(() {
+                    _score += score;
+                    _currentIndex++;
+                  });
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: Text("完成"),
+                      content: Text("您站立了 $seconds 秒"),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: Text("確定"),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ]
+            else if (_currentIndex == 3) ...[
+              WalkingSpeedTest(
+                questionText: _questions[_currentIndex],
+                onFinished: (seconds, score) {
+                  setState(() {
+                    _score += score;
+                    _currentIndex++;
+                  });
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: Text("完成"),
+                      content: Text("您行走了 ${seconds.toStringAsFixed(2)} 秒"),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: Text("確定"),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ]
+            else ...[
+              SitStandTest(
+                questionText: _questions[_currentIndex], 
+                onFinished: (seconds, score) {
+                  setState(() {
+                    _score += score;
+                    _completeTest();
+                  });
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: Text("完成"),
+                      content: Text("您站立了 $seconds 秒"),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: Text("確定"),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              )
+            ],
+            SizedBox(height: 20),
+            Text("分數: $_score"),
+          ],
+        ),
+      ),
+    );
+  }
+}

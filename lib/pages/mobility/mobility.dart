@@ -3,7 +3,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:icope/pages/mobility_forward.dart';
+import 'package:icope/pages/mobility/mobility_forward.dart';
 import 'package:icope/homepage.dart';
 
 class Mobility extends StatefulWidget {
@@ -17,7 +17,7 @@ class _MobilityState extends State<Mobility> {
 
   final List<String> _questions = [
     "請輸入您的年齡",
-    "請用您最快的速度，從椅子上站起來並坐下，並且將您的雙手交叉放置在您的胸前，\n重複五次",
+    "請將雙手交叉放於胸前，從椅子站起來和坐下連續進行五次",
     "您是否完成五次？",
   ];
 
@@ -29,20 +29,23 @@ class _MobilityState extends State<Mobility> {
 
   bool _uButtonPressed = false; //understand button
   bool _isTiming = false;
-  int _seconds = 0;
+  double _seconds = 0.0;
   Timer? _timer;
-  int _maxSeconds = 60;
+  double _maxSeconds = 60.0;
 
   void _startTimer() {
     setState(() {
-      _seconds = 0;
+      _seconds = 0.0;
       _isTiming = true;
     });
 
     _timer?.cancel();
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(Duration(milliseconds: 10), (timer) {
       setState(() {
-        _seconds++;
+        _seconds += 0.01;
+        if (_seconds >= _maxSeconds){
+          _stopTimer();
+        }
       });
     });
   }
@@ -163,16 +166,16 @@ class _MobilityState extends State<Mobility> {
                 );
               }),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
             if (_currentIndex == 0) ...[
               SizedBox(
                 height: 60,
               ),
               IconButton(
                 onPressed: () {  
-
+                  //語音
                 },
-                icon: Icon(Icons.volume_up_outlined),
+                icon: Icon(Icons.volume_up),
               ),
               SizedBox(
                 height: 10,
@@ -221,8 +224,8 @@ class _MobilityState extends State<Mobility> {
                     child: Text(
                       "送出",
                       style: TextStyle(
-                        fontSize: 16,
-                        //fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
                     ),
@@ -233,12 +236,10 @@ class _MobilityState extends State<Mobility> {
             else if (isFirstQuestion && !_uButtonPressed) ...[
               IconButton(
                 onPressed: () {
-
+                  //語音
                 },
-                icon: Icon(Icons.volume_up_outlined),
+                icon: Icon(Icons.volume_up),
               ),
-              SizedBox(height: 10),
-
               Text(
                 "請依照指示動作",
                 style: TextStyle(
@@ -248,15 +249,22 @@ class _MobilityState extends State<Mobility> {
                 textAlign: TextAlign.center,
               ),
               SizedBox(
-                height: 20,
+                height: 5,
               ),
               Text(
                 _questions[_currentIndex],
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25, color: Colors.grey[800]),
                 textAlign: TextAlign.center,
               ),
-
-              SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Image.asset(
+                  "assets/gif/sitstand.gif",
+                  width: 330,
+                  height: 330,
+                  fit: BoxFit.contain,
+                ),
+              ),
               ElevatedButton(
                 onPressed: () {
                   setState(() {
@@ -282,6 +290,22 @@ class _MobilityState extends State<Mobility> {
               Column(
                 children: [
                   SizedBox(
+                    height: 5,
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      //語音
+                    },
+                    icon: Icon(Icons.volume_up),
+                  ),
+                  Text(
+                    "若無法完成，請直接按停止計時",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(
                     height: 50,
                   ),
                   SizedBox(
@@ -297,7 +321,7 @@ class _MobilityState extends State<Mobility> {
                         ),
                         Center(
                           child: Text(
-                            "$_seconds",
+                            "${_seconds.toStringAsFixed(0)}",
                             style: TextStyle(
                               fontSize: 70,
                               fontWeight: FontWeight.bold,
@@ -355,9 +379,9 @@ class _MobilityState extends State<Mobility> {
             else ...[
               IconButton(
                 onPressed: () {
-
+                  //語音
                 },
-                icon: Icon(Icons.volume_up_outlined),
+                icon: Icon(Icons.volume_up),
               ),
               SizedBox(height: 10),
               Text(
@@ -407,12 +431,12 @@ class _MobilityState extends State<Mobility> {
               ),
             ],
             //debug
-            SizedBox(height: 20),
-            Text("年齡: $age"),
-            SizedBox(height: 20),
-            Text("目前分數: $_score"),
-            SizedBox(height: 20),
-            Text("總共時間: $_seconds"),
+            //SizedBox(height: 20),
+            //Text("年齡: $age"),
+            //SizedBox(height: 20),
+            //Text("目前分數: $_score"),
+            //SizedBox(height: 20),
+            //Text("總共時間: $_seconds"),
           ],
         ),
       ),
