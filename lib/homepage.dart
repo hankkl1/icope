@@ -1,8 +1,14 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:icope/noti_service.dart';
 import 'package:icope/pages/nutrition/nutrition.dart';
 import 'package:icope/pages/mobility/mobility.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:icope/tts.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:record/record.dart';
+import 'package:icope/stt.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,8 +18,15 @@ class HomePage extends StatefulWidget {
 }
 
 class  HomePageState extends State <HomePage> {
+  final player = AudioPlayer();
+  bool isTTS = false;
+  bool isZH = true;
+
   @override
   Widget build(BuildContext context) {
+    double sectionWidth = MediaQuery.of(context).size.width * 0.42; 
+    double sectionHeight = sectionWidth;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -34,7 +47,42 @@ class  HomePageState extends State <HomePage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        )
+                        ),
+                        SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: FloatingActionButton.extended(
+                            onPressed:() async {
+                              if (isZH){
+                                String? zh_path = await processAudioFile("切換為台語語音", "tw");
+                                player.setFilePath(zh_path!);
+                                player.play();
+                                print("playing");
+                                isZH = false;
+                              }
+                              else{
+                                String? zh_path = await processAudioFile("切換為中文語音", "zh");
+                                player.setFilePath(zh_path!);
+                                player.play();
+                                print("playing");
+                                isZH = true;
+                              }
+                              setState(() {
+                        
+                              });
+                            },
+                            backgroundColor:  isZH? Colors.red[300] :Colors.lime[400],
+                            elevation: 0,
+                            label: Text(
+                              isZH ? "中" : "台",
+                              style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     SizedBox(
@@ -48,43 +96,86 @@ class  HomePageState extends State <HomePage> {
                             fontSize: 20,
                           ),
                         ),
-                        Expanded(
-                          child: IconButton(
-                            onPressed: () {  
-                              //語音
-                            },
-                            icon: Icon(Icons.volume_up),
-                          ),
+                        IconButton(
+                          onPressed: () async {  
+                            //語音
+                            if (isZH){
+                              String? zh_path = await processAudioFile("請點擊以下功能進行檢測", "zh");
+                              player.setFilePath(zh_path!);
+                              player.play();
+                            }
+                            else{
+                              String? tw_path = await processAudioFile("請點擊以下功能進行檢測", "tw");
+                              player.setFilePath(tw_path!);
+                              player.play();
+                            }
+                            print("playing");
+                          },
+                          icon: Icon(Icons.volume_up),
                         ),
                       ],
-                      
                     ),
                     SizedBox(
-                      height: 20,
+                      height: 25,
                     ),
+
+                    ElevatedButton(
+                      onPressed: () {
+                        NotiService().scheduleNotification(
+                          title: "title",
+                          body: "body",
+                          scheduledDate: DateTime.now().add(Duration(seconds: 2)),
+                        );
+
+                      }, 
+                      child: Text("send"),
+                    ),
+                    SizedBox(
+                      height: 25,
+                    ),
+
+                    ElevatedButton(
+                      onPressed: () {
+                        NotiService().showNotifications(
+                          title: "title",
+                          body: "body",
+                        );
+
+                      }, 
+                      child: Text("send"),
+                    ),
+
+                    SizedBox(
+                      height: 25,
+                    ),
+
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         FunctionSection(
+                          width: sectionWidth,
+                          height: sectionHeight,
                           color: Colors.lightBlue[300]!, 
                           icon: Icons.fastfood, 
                           label: "營養", 
                           onTap: () {
                             //語音
-                            Navigator.push(context, MaterialPageRoute(builder:(context) => Nutrition()));
+                            Navigator.push(context, MaterialPageRoute(builder:(context) => Nutrition(isZh: isZH,)));
                           },
                         ),
                         SizedBox(
-                          width: 10,
+                          width: 5,
                         ),
                         //Mobility
                         FunctionSection(
+                          width: sectionWidth,
+                          height: sectionHeight,
                           color: Colors.amber[300]!, 
                           icon: Icons.assist_walker, 
                           label: "行動", 
                           onTap: () {
                             //語音
-                            Navigator.push(context, MaterialPageRoute(builder:(context) => Mobility()));
+                            Navigator.push(context, MaterialPageRoute(builder:(context) => Mobility(isZh: isZH,)));
                           },
                         ),
                       ],
@@ -100,11 +191,11 @@ class  HomePageState extends State <HomePage> {
                             borderRadius: BorderRadius.circular(15),
                             color: Colors.purple[200],
                           ),
-                          width: 160,
-                          height: 160,
+                          width: sectionWidth,
+                          height: sectionHeight,
                         ),
                         SizedBox(
-                          width: 10,
+                          width: 5,
                         ),
                         //Mobility
                         Container(
@@ -112,8 +203,8 @@ class  HomePageState extends State <HomePage> {
                             borderRadius: BorderRadius.circular(15),
                             color: Colors.lime[200],
                           ),
-                          width: 160,
-                          height: 160,
+                          width: sectionWidth,
+                          height: sectionHeight,
                         ),
                       ],
                     ),
@@ -128,11 +219,11 @@ class  HomePageState extends State <HomePage> {
                             borderRadius: BorderRadius.circular(15),
                             color: Colors.orange[200],
                           ),
-                          width: 160,
-                          height: 160,
+                          width: sectionWidth,
+                          height: sectionHeight,
                         ),
                         SizedBox(
-                          width: 10,
+                          width: 5,
                         ),
                         //Mobility
                         Container(
@@ -140,8 +231,8 @@ class  HomePageState extends State <HomePage> {
                             borderRadius: BorderRadius.circular(15),
                             color: Colors.red[200],
                           ),
-                          width: 160,
-                          height: 160,
+                          width: sectionWidth,
+                          height: sectionHeight,
                         ),
                       ],
                     ),
@@ -160,15 +251,20 @@ class  HomePageState extends State <HomePage> {
 
 
 class FunctionSection extends StatefulWidget {
+
   const FunctionSection({
     super.key, 
     required this.color, 
+    required this.width,
+    required this.height,
     required this.icon,
     required this.label,
     required this.onTap,
   });
 
   final Color color;
+  final double width;
+  final double height;
   final IconData icon;
   final String label;
   final VoidCallback? onTap;
@@ -180,6 +276,9 @@ class FunctionSection extends StatefulWidget {
 class _FunctionSectionState extends State<FunctionSection> {
   @override
   Widget build(BuildContext context) {
+    final double iconSize = widget.width * 0.48;
+    final double fontSize = widget.width * 0.18;
+
     return GestureDetector(
       onTap: widget.onTap,
       child: Container(
@@ -187,8 +286,8 @@ class _FunctionSectionState extends State<FunctionSection> {
           borderRadius: BorderRadius.circular(15),
           color: widget.color,
         ),
-        width: 160,
-        height: 160,
+        width: widget.width,
+        height: widget.height,
         padding: EdgeInsets.all(20),
         child: Center(
           child: Column(
@@ -196,12 +295,12 @@ class _FunctionSectionState extends State<FunctionSection> {
               Icon(
                 widget.icon,
                 color: Colors.white,
-                size: 65,
+                size: iconSize,
               ),
               Text(
                 widget.label,
                 style: TextStyle(
-                  fontSize: 36,
+                  fontSize: fontSize,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),

@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:icope/enterpage.dart';
 import 'package:icope/detail.dart';
 import 'package:icope/suggestionpage.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:record/record.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:icope/stt.dart';
+
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -15,6 +20,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   final TextEditingController _searchController = TextEditingController();
   
+  bool isRecording = false;
+  final record = AudioRecorder();
+  final player = AudioPlayer();
+
   @override
   void initState(){
     super.initState();
@@ -62,6 +71,57 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               Row(
                 children: [
+                  SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: FloatingActionButton.extended(
+                      onPressed:() async {
+                        final tempPath = await getTemporaryDirectory();
+                        String path = '${tempPath.path}/audio.wav';
+                        if (isRecording){
+                          await record.stop();
+
+                          player.setFilePath(path);
+                          //player.play();
+                          
+                          String? result = await request(path);
+                          print(result);
+                          if (result != null){
+                            _searchController.text = result;
+                          }
+                          else{
+                            _searchController.text = '';
+                          }
+
+                          isRecording = false;
+
+                        }
+                        else{
+                          if (await record.hasPermission()){
+                            await record.start(
+                              const RecordConfig(
+                                sampleRate: 16000,
+                                numChannels: 1,
+                                encoder: AudioEncoder.wav,
+                              ), 
+                              path: path
+                            );
+                          }
+                          isRecording = true;
+                        }
+                        setState(() {
+                          
+                        });
+                      },
+                      elevation: 1,
+                      backgroundColor:  isRecording? Colors.red :Colors.blue,
+                      label: const Icon(
+                        Icons.mic,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
                   Expanded(
                     child: Container(
                       margin: const EdgeInsets.all(10),

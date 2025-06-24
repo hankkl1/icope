@@ -61,7 +61,7 @@ class _SuggestionDetailsPageState extends State<SuggestionDetailsPage> {
                   },
                   icon: Icon(Icons.play_arrow),
                   label: Text(
-                    "觀看範例影片",
+                    "點擊觀看影片",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold

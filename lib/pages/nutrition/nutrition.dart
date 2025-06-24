@@ -4,15 +4,26 @@ import 'package:flutter/material.dart';
 import 'package:icope/homepage.dart';
 import 'package:icope/pages/mobility/mobility.dart';
 import 'package:icope/pages/nutrition/nutrition_forward.dart';
+import 'package:icope/enterpage.dart';
+
+import 'package:just_audio/just_audio.dart';
+import 'package:icope/tts.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:record/record.dart';
+import 'package:icope/stt.dart';
 
 class Nutrition extends StatefulWidget {
-  const Nutrition({super.key});
+  final bool isZh;
+  const Nutrition({super.key, required this.isZh});
 
   @override
   State<Nutrition> createState() => _NutritionState();
 }
 
 class _NutritionState extends State<Nutrition> {
+
+  final player = AudioPlayer();
+  bool isTTS = false;
 
   bool weightEntered = false; //to check whether the user entered weight or not
   bool heightEntered = false; //to check whether the user entered height or not
@@ -24,7 +35,7 @@ class _NutritionState extends State<Nutrition> {
   final List<String> _questions = [
     "請輸入您的體重(公斤)",
     "請輸入您的身高(公分)",
-    "您是否無意識地\n在過去三個月內\n體重減少三公斤？",
+    "您是否無意識地在過去三個月內體重減少三公斤？",
     "您是否最近食慾不振？",
   ];
 
@@ -44,10 +55,10 @@ class _NutritionState extends State<Nutrition> {
 
       if (_score >= 1) {
         message = "您可能有營養風險，建議多加留意。";
-        nextPage = NutritionForward(weight: weight!, height: height!);
+        nextPage = NutritionForward(isZh: widget.isZh, weight: weight!, height: height!);
       } else {
         message = "目前無明顯營養風險，請繼續下一步。";
-        nextPage = HomePage();
+        nextPage = EnterPage();
       }
 
       showDialog(
@@ -173,8 +184,19 @@ class _NutritionState extends State<Nutrition> {
                 height: 60,
               ),
               IconButton(
-                onPressed: () {  
-
+                onPressed: () async {  
+                  if (widget.isZh){
+                    String? zh_path = await processAudioFile(_questions[_currentIndex], "zh");
+                    player.setFilePath(zh_path!);
+                    player.play();
+                    print("playing");
+                  }
+                  else{
+                    String? zh_path = await processAudioFile(_questions[_currentIndex], "tw");
+                    player.setFilePath(zh_path!);
+                    player.play();
+                    print("playing");
+                  }
                 },
                 icon: Icon(Icons.volume_up),
               ),

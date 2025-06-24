@@ -2,8 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:icope/enterpage.dart';
+import 'package:icope/noti_service.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  NotiService().initNotification();
+
+
   runApp(const MyApp());
 }
 

@@ -3,17 +3,27 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:icope/enterpage.dart';
 import 'package:icope/pages/mobility/mobility_forward.dart';
 import 'package:icope/homepage.dart';
 
+import 'package:just_audio/just_audio.dart';
+import 'package:icope/tts.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:record/record.dart';
+import 'package:icope/stt.dart';
+
 class Mobility extends StatefulWidget {
-  const Mobility({super.key});
+  final bool isZh;
+  const Mobility({super.key, required this.isZh});
 
   @override
   State<Mobility> createState() => _MobilityState();
 }
 
 class _MobilityState extends State<Mobility> {
+  final player = AudioPlayer();
+  bool isTTS = false;
 
   final List<String> _questions = [
     "請輸入您的年齡",
@@ -75,7 +85,7 @@ class _MobilityState extends State<Mobility> {
         nextPage = MobilityForward();
       } else {
         message = "目前無明顯行動風險，請繼續下一步。";
-        nextPage = HomePage();
+        nextPage = EnterPage();
       }
 
       showDialog(
@@ -172,8 +182,20 @@ class _MobilityState extends State<Mobility> {
                 height: 60,
               ),
               IconButton(
-                onPressed: () {  
+                onPressed: () async {  
                   //語音
+                  if (widget.isZh){
+                    String? zh_path = await processAudioFile(_questions[_currentIndex], "zh");
+                    player.setFilePath(zh_path!);
+                    player.play();
+                    print("playing");
+                  }
+                  else{
+                    String? zh_path = await processAudioFile(_questions[_currentIndex], "tw");
+                    player.setFilePath(zh_path!);
+                    player.play();
+                    print("playing");
+                  }
                 },
                 icon: Icon(Icons.volume_up),
               ),
@@ -235,8 +257,20 @@ class _MobilityState extends State<Mobility> {
             ]
             else if (isFirstQuestion && !_uButtonPressed) ...[
               IconButton(
-                onPressed: () {
+                onPressed: () async {
                   //語音
+                  if (widget.isZh){
+                    String? zh_path = await processAudioFile(_questions[_currentIndex], "zh");
+                    player.setFilePath(zh_path!);
+                    player.play();
+                    print("playing");
+                  }
+                  else{
+                    String? zh_path = await processAudioFile(_questions[_currentIndex], "tw");
+                    player.setFilePath(zh_path!);
+                    player.play();
+                    print("playing");
+                  }
                 },
                 icon: Icon(Icons.volume_up),
               ),
@@ -293,8 +327,20 @@ class _MobilityState extends State<Mobility> {
                     height: 5,
                   ),
                   IconButton(
-                    onPressed: () {
+                    onPressed: () async {
                       //語音
+                      if (widget.isZh){
+                        String? zh_path = await processAudioFile("若無法完成，請直接按停止計時", "zh");
+                        player.setFilePath(zh_path!);
+                        player.play();
+                        print("playing");
+                      }
+                      else{
+                        String? zh_path = await processAudioFile("若無法完成，請直接按停止計時", "tw");
+                        player.setFilePath(zh_path!);
+                        player.play();
+                        print("playing");
+                      }
                     },
                     icon: Icon(Icons.volume_up),
                   ),
@@ -378,8 +424,20 @@ class _MobilityState extends State<Mobility> {
             ]
             else ...[
               IconButton(
-                onPressed: () {
+                onPressed: () async {
                   //語音
+                  if (widget.isZh){
+                    String? zh_path = await processAudioFile(_questions[_currentIndex], "zh");
+                    player.setFilePath(zh_path!);
+                    player.play();
+                    print("playing");
+                  }
+                  else{
+                    String? zh_path = await processAudioFile(_questions[_currentIndex], "tw");
+                    player.setFilePath(zh_path!);
+                    player.play();
+                    print("playing");
+                  }
                 },
                 icon: Icon(Icons.volume_up),
               ),
