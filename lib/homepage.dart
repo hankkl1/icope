@@ -23,47 +23,131 @@ class  HomePageState extends State <HomePage> {
               child: Center(
                 child: Column(
                   children: [
-                    Placeholder(
-                      fallbackHeight: 100,
-                      fallbackWidth: 10,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "台灣版ICOPE Monitor",
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )
+                      ],
                     ),
                     SizedBox(
-                      height: 10,
+                      height: 5,
                     ),
-                    //Nutrition
-                    FunctionSection(
-                      color: Colors.lightBlue[300]!, 
-                      icon: Icons.fastfood, 
-                      label: "營養", 
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder:(context) => Nutrition()));
-                      },
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    //Mobility
-                    FunctionSection(
-                      color: Colors.amber[300]!, 
-                      icon: Icons.assist_walker, 
-                      label: "行動", 
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder:(context) => Mobility()));
-                      },
+                    Row(
+                      children: [
+                        Text(
+                          "請點擊以下功能進行檢測   ",
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                        Expanded(
+                          child: IconButton(
+                            onPressed: () {  
+                              //語音
+                            },
+                            icon: Icon(Icons.volume_up),
+                          ),
+                        ),
+                      ],
+                      
                     ),
                     SizedBox(
-                      height: 10,
+                      height: 20,
                     ),
-
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Colors.purple[200],
-                      ),
-                      width: 300,
-                      height: 300,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        FunctionSection(
+                          color: Colors.lightBlue[300]!, 
+                          icon: Icons.fastfood, 
+                          label: "營養", 
+                          onTap: () {
+                            //語音
+                            Navigator.push(context, MaterialPageRoute(builder:(context) => Nutrition()));
+                          },
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        //Mobility
+                        FunctionSection(
+                          color: Colors.amber[300]!, 
+                          icon: Icons.assist_walker, 
+                          label: "行動", 
+                          onTap: () {
+                            //語音
+                            Navigator.push(context, MaterialPageRoute(builder:(context) => Mobility()));
+                          },
+                        ),
+                      ],
                     ),
-
+                    SizedBox(
+                      height: 12,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Colors.purple[200],
+                          ),
+                          width: 160,
+                          height: 160,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        //Mobility
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Colors.lime[200],
+                          ),
+                          width: 160,
+                          height: 160,
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Colors.orange[200],
+                          ),
+                          width: 160,
+                          height: 160,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        //Mobility
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Colors.red[200],
+                          ),
+                          width: 160,
+                          height: 160,
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 12,
+                    ),
                   ],
                 ),
               ),
@@ -103,8 +187,8 @@ class _FunctionSectionState extends State<FunctionSection> {
           borderRadius: BorderRadius.circular(15),
           color: widget.color,
         ),
-        width: 300,
-        height: 300,
+        width: 160,
+        height: 160,
         padding: EdgeInsets.all(20),
         child: Center(
           child: Column(
@@ -112,12 +196,12 @@ class _FunctionSectionState extends State<FunctionSection> {
               Icon(
                 widget.icon,
                 color: Colors.white,
-                size: 160,
+                size: 65,
               ),
               Text(
                 widget.label,
                 style: TextStyle(
-                  fontSize: 60,
+                  fontSize: 36,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),

@@ -2,10 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:icope/enterpage.dart';
 import 'package:icope/detail.dart';
 
+class SuggestionExample {
+  final String text;
+  final String? description;
+  final String? imageUrl;
+  final String? videoUrl;
+
+  SuggestionExample({
+    required this.text,
+    this.description,
+    this.imageUrl,
+    this.videoUrl,
+  });
+}
+
 class SuggestionItem {
   final String category;
   final String title;
   final String description;
+  final String detail;
+  final List<SuggestionExample>? examples;
   final String? imageUrl; 
   final String? videoUrl;
 
@@ -13,6 +29,8 @@ class SuggestionItem {
     required this.category, 
     required this.title, 
     required this.description,
+    required this.detail,
+    this.examples,
     this.imageUrl,
     this.videoUrl,
   });

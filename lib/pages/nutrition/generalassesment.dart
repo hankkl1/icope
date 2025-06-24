@@ -5,9 +5,11 @@ import 'package:icope/enterpage.dart';
 
 class GeneralAssessmentPage extends StatefulWidget {
   final int previousScore;
+  final double BMI;
   const GeneralAssessmentPage({
     super.key,
     required this.previousScore,
+    required this.BMI,
   });
 
   @override
@@ -72,28 +74,30 @@ class _GeneralAssessmentPageState extends State<GeneralAssessmentPage> {
     final vegFruitChoice = _answers[5];
     hasLowVegFruitIntake = (vegFruitChoice != null && _questions[5].scores[vegFruitChoice] == 0);
 
-    //score
+    //score and results
     double _totalScore = _score + widget.previousScore;
     List<SuggestionItem> selectedSuggestions = [];
+
+    if (_totalScore <= 17){
+      print("營養不良");
+      selectedSuggestions.addAll(suggestionGroups['malnutrition'] ?? []);
+    }
+    else if (_totalScore <=23){
+      print("有營養不良危險");
+      selectedSuggestions.addAll(suggestionGroups['at_risk_nutrition'] ?? []);
+    }
+    else {
+      print("營養狀況良好");
+      selectedSuggestions.addAll(suggestionGroups['normal_nutrition'] ?? []);
+    }
+    
     if (hasLowVegFruitIntake){
       selectedSuggestions.addAll(suggestionGroups['vegfruit_risk'] ?? []);
     }
     else if (hasProteinDeficiencyRisk){
-      selectedSuggestions.addAll(suggestionGroups['protein_protein'] ?? []);
+      selectedSuggestions.addAll(suggestionGroups['protein_risk'] ?? []);
     }
 
-    if (_totalScore <= 17){
-      print("營養不良");
-      selectedSuggestions.addAll(suggestionGroups['nutrition_risk'] ?? []);
-    }
-    else if (_totalScore <=23){
-      print("有營養不良危險");
-      selectedSuggestions.addAll(suggestionGroups['nutrition_risk'] ?? []);
-    }
-    else {
-      print("營養狀況良好");
-      selectedSuggestions.addAll(suggestionGroups['nutrition_non_risk'] ?? []);
-    }
     EnterPage.historyItems.add(selectedSuggestions!);
     Navigator.push(
       context,

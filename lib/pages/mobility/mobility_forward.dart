@@ -36,20 +36,25 @@ class _MobilityForwardState extends State<MobilityForward> {
   int _score = 0;
 
   void _completeTest(){
+      
+    List<SuggestionItem> selectedSuggestions = [];
+    selectedSuggestions.addAll(suggestionGroups['normal_mobility'] ?? []);
+    selectedSuggestions.addAll(suggestionGroups['muscle_strength'] ?? []);
     if (_score <= 9) {
-      final selectedSuggestions = suggestionGroups['mobility_low'] ?? [];
-
-      EnterPage.historyItems.add(selectedSuggestions);
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SuggestionPage(suggestions: selectedSuggestions),
-        ),
-      );
-    } else {
-      Navigator.pop(context);
+      selectedSuggestions.addAll(suggestionGroups['limited_mobility'] ?? []);
+    } 
+    else {
+      
     }
+    
+    EnterPage.historyItems.add(selectedSuggestions);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SuggestionPage(suggestions: selectedSuggestions),
+      ),
+    );
   }
   
   @override

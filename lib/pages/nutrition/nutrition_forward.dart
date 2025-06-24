@@ -67,7 +67,7 @@ class _NutritionForwardState extends State<NutritionForward> {
       _answers[questionIndex] = score;
     });
   }
-
+  
   int _bmiScore(){
     double BMI = widget.weight / (widget.height * widget.height / 10000);
 
@@ -160,7 +160,7 @@ class _NutritionForwardState extends State<NutritionForward> {
             if (_totalScore <= 11) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => GeneralAssessmentPage(previousScore: _totalScore)),
+                MaterialPageRoute(builder: (context) => GeneralAssessmentPage(previousScore: _totalScore, BMI: widget.weight / (widget.height * widget.height / 10000),)),
               );
             } 
             else {
