@@ -9,7 +9,8 @@ import 'package:icope/stt.dart';
 
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  final ValueNotifier<bool> isZH;
+  const ProfilePage({super.key, required this.isZH});
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
@@ -181,7 +182,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SuggestionDetailsPage(item: item),
+                              builder: (context) => SuggestionDetailsPage(item: item, isZh: widget.isZH.value,),
                             ),
                           );
                         },

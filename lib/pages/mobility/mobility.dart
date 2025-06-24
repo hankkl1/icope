@@ -82,7 +82,7 @@ class _MobilityState extends State<Mobility> {
 
       if (_score >= 1 || (age! < 80 && _seconds > 14) || (age! >= 80 && _seconds > 16)) {
         message = "您可能有行動風險，建議多加留意。";
-        nextPage = MobilityForward();
+        nextPage = MobilityForward(isZh: widget.isZh,);
       } else {
         message = "目前無明顯行動風險，請繼續下一步。";
         nextPage = EnterPage();
@@ -92,8 +92,19 @@ class _MobilityState extends State<Mobility> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("提醒"),
-            content: Text(message),
+            title: Text(
+              "提醒",
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            content: Text(
+              message,
+              style: TextStyle(
+                fontSize: 20,
+              ),
+            ),
             actions: [
               TextButton(
                 onPressed: () {
@@ -103,7 +114,12 @@ class _MobilityState extends State<Mobility> {
                     MaterialPageRoute(builder: (context) => nextPage),
                   );
                 },
-                child: Text("確定"),
+                child: Text(
+                  "確定",
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
               ),
             ],
           );

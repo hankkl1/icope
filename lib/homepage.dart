@@ -11,7 +11,8 @@ import 'package:record/record.dart';
 import 'package:icope/stt.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final ValueNotifier<bool> isZH;
+  const HomePage({super.key, required this.isZH});
 
   @override
   State <HomePage> createState() =>  HomePageState();
@@ -20,7 +21,6 @@ class HomePage extends StatefulWidget {
 class  HomePageState extends State <HomePage> {
   final player = AudioPlayer();
   bool isTTS = false;
-  bool isZH = true;
 
   @override
   Widget build(BuildContext context) {
@@ -53,28 +53,28 @@ class  HomePageState extends State <HomePage> {
                           height: 50,
                           child: FloatingActionButton.extended(
                             onPressed:() async {
-                              if (isZH){
+                              if (widget.isZH.value){
                                 String? zh_path = await processAudioFile("切換為台語語音", "tw");
                                 player.setFilePath(zh_path!);
                                 player.play();
                                 print("playing");
-                                isZH = false;
+                                widget.isZH.value = false;
                               }
                               else{
                                 String? zh_path = await processAudioFile("切換為中文語音", "zh");
                                 player.setFilePath(zh_path!);
                                 player.play();
                                 print("playing");
-                                isZH = true;
+                                widget.isZH.value = true;
                               }
                               setState(() {
                         
                               });
                             },
-                            backgroundColor:  isZH? Colors.red[300] :Colors.lime[400],
+                            backgroundColor:  widget.isZH.value? Colors.red[300] :Colors.lime[400],
                             elevation: 0,
                             label: Text(
-                              isZH ? "中" : "台",
+                              widget.isZH.value ? "中" : "台",
                               style: TextStyle(
                                 fontSize: 25,
                                 fontWeight: FontWeight.bold,
@@ -99,7 +99,7 @@ class  HomePageState extends State <HomePage> {
                         IconButton(
                           onPressed: () async {  
                             //語音
-                            if (isZH){
+                            if (widget.isZH.value){
                               String? zh_path = await processAudioFile("請點擊以下功能進行檢測", "zh");
                               player.setFilePath(zh_path!);
                               player.play();
@@ -160,7 +160,7 @@ class  HomePageState extends State <HomePage> {
                           label: "營養", 
                           onTap: () {
                             //語音
-                            Navigator.push(context, MaterialPageRoute(builder:(context) => Nutrition(isZh: isZH,)));
+                            Navigator.push(context, MaterialPageRoute(builder:(context) => Nutrition(isZh: widget.isZH.value,)));
                           },
                         ),
                         SizedBox(
@@ -175,7 +175,7 @@ class  HomePageState extends State <HomePage> {
                           label: "行動", 
                           onTap: () {
                             //語音
-                            Navigator.push(context, MaterialPageRoute(builder:(context) => Mobility(isZh: isZH,)));
+                            Navigator.push(context, MaterialPageRoute(builder:(context) => Mobility(isZh: widget.isZH.value,)));
                           },
                         ),
                       ],

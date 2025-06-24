@@ -1,7 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
+import 'package:just_audio/just_audio.dart';
+import 'package:icope/tts.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:record/record.dart';
+import 'package:icope/stt.dart';
+
 class QuestionsSection extends StatefulWidget {
+  final bool isZh;
   final String questionText;
   final String questionPic;
   final int currentStep;
@@ -9,6 +16,7 @@ class QuestionsSection extends StatefulWidget {
 
   const QuestionsSection({
     super.key,
+    required this.isZh,
     required this.questionText,
     required this.questionPic,
     required this.currentStep,
@@ -21,6 +29,9 @@ class QuestionsSection extends StatefulWidget {
 }
 
 class _QuestionsSectionState extends State<QuestionsSection> {
+
+  final player = AudioPlayer();
+  bool isTTS = false;
 
   String? pic;
   bool _uButtonPressed = false;
@@ -85,8 +96,19 @@ class _QuestionsSectionState extends State<QuestionsSection> {
         SizedBox(height: 5),
         if (!_uButtonPressed) ... [
           IconButton(
-            onPressed: () {
-              //語音
+            onPressed: () async {
+              if (widget.isZh){
+                String? zh_path = await processAudioFile(widget.questionText, "zh");
+                player.setFilePath(zh_path!);
+                player.play();
+                print("playing");
+              }
+              else{
+                String? zh_path = await processAudioFile(widget.questionText, "tw");
+                player.setFilePath(zh_path!);
+                player.play();
+                print("playing");
+              }
             },
             icon: Icon(Icons.volume_up),
           ),
@@ -130,8 +152,20 @@ class _QuestionsSectionState extends State<QuestionsSection> {
         ]
         else ...[
           IconButton(
-            onPressed: () {
+            onPressed: () async {
               //語音
+              if (widget.isZh){
+                String? zh_path = await processAudioFile("若無法維持，請直接按停止計時", "zh");
+                player.setFilePath(zh_path!);
+                player.play();
+                print("playing");
+              }
+              else{
+                String? zh_path = await processAudioFile("若無法維持，請直接按停止計時", "tw");
+                player.setFilePath(zh_path!);
+                player.play();
+                print("playing");
+              }
             },
             icon: Icon(Icons.volume_up),
           ),

@@ -7,14 +7,23 @@ import 'package:icope/pages/mobility/function_pages/sit_stand.dart';
 import 'package:icope/suggestionpage.dart';
 import 'package:icope/suggestionsdata.dart';
 
+import 'package:just_audio/just_audio.dart';
+import 'package:icope/tts.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:record/record.dart';
+import 'package:icope/stt.dart';
+
 class MobilityForward extends StatefulWidget {
-  const MobilityForward({super.key});
+  final bool isZh;
+  const MobilityForward({super.key, required this.isZh});
 
   @override
   State<MobilityForward> createState() => _MobilityForwardState();
 }
 
 class _MobilityForwardState extends State<MobilityForward> {
+  final player = AudioPlayer();
+  bool isTTS = false;
 
   bool balanceTest = true;
 
@@ -52,7 +61,7 @@ class _MobilityForwardState extends State<MobilityForward> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SuggestionPage(suggestions: selectedSuggestions),
+        builder: (context) => SuggestionPage(suggestions: selectedSuggestions, isZh: widget.isZh,),
       ),
     );
   }
@@ -88,6 +97,7 @@ class _MobilityForwardState extends State<MobilityForward> {
             ),
             if (_currentIndex < 3) ...[
               QuestionsSection(
+                isZh: widget.isZh,
                 questionText: _questions[_currentIndex],
                 questionPic: _pictures[_currentIndex],
                 currentStep: _currentIndex,
@@ -114,6 +124,7 @@ class _MobilityForwardState extends State<MobilityForward> {
             ]
             else if (_currentIndex == 3) ...[
               WalkingSpeedTest(
+                isZh: widget.isZh,
                 questionText: _questions[_currentIndex],
                 onFinished: (seconds, score) {
                   setState(() {
@@ -138,6 +149,7 @@ class _MobilityForwardState extends State<MobilityForward> {
             ]
             else ...[
               SitStandTest(
+                isZh: widget.isZh,
                 questionText: _questions[_currentIndex], 
                 onFinished: (seconds, score) {
                   setState(() {

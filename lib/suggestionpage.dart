@@ -37,9 +37,10 @@ class SuggestionItem {
 }
 
 class SuggestionPage extends StatefulWidget {
+  final bool isZh;
   final List<SuggestionItem> suggestions;
 
-  const SuggestionPage({super.key, required this.suggestions});
+  const SuggestionPage({super.key, required this.isZh, required this.suggestions});
 
   @override
   State<SuggestionPage> createState() => _SuggestionPageState();
@@ -84,7 +85,7 @@ class _SuggestionPageState extends State<SuggestionPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => SuggestionDetailsPage(item: item),
+                            builder: (context) => SuggestionDetailsPage(item: item, isZh: widget.isZh,),
                           ),
                         );
                       },

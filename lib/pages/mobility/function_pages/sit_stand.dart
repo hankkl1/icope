@@ -2,12 +2,20 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'package:just_audio/just_audio.dart';
+import 'package:icope/tts.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:record/record.dart';
+import 'package:icope/stt.dart';
+
 class SitStandTest extends StatefulWidget {
+  final bool isZh;
   final String questionText;
   final Function(int seconds, int score) onFinished;
 
   const SitStandTest({
     super.key, 
+    required this.isZh,
     required this.questionText,
     required this.onFinished,
   });
@@ -17,6 +25,10 @@ class SitStandTest extends StatefulWidget {
 }
 
 class _SitStandTestState extends State<SitStandTest > {
+
+  final player = AudioPlayer();
+  bool isTTS = false;
+
   bool _uButtonPressed = false;
   bool _isTiming = false;
   double _seconds = 0.0;
@@ -73,8 +85,20 @@ class _SitStandTestState extends State<SitStandTest > {
         SizedBox(height: 5),
         if (!_uButtonPressed) ...[
           IconButton(
-            onPressed: () {
+            onPressed: () async {
               //語音
+              if (widget.isZh){
+                String? zh_path = await processAudioFile("${widget.questionText}, 請連續起立和坐下五次", "zh");
+                player.setFilePath(zh_path!);
+                player.play();
+                print("playing");
+              }
+              else{
+                String? zh_path = await processAudioFile("${widget.questionText}, 請連續起立和坐下五次", "tw");
+                player.setFilePath(zh_path!);
+                player.play();
+                print("playing");
+              }
             },
             icon: Icon(Icons.volume_up),
           ),
@@ -113,8 +137,20 @@ class _SitStandTestState extends State<SitStandTest > {
         ] else ...[
           //SizedBox(height: 5),
           IconButton(
-            onPressed: () {
+            onPressed: () async {
               //語音
+              if (widget.isZh){
+                String? zh_path = await processAudioFile("若無法完成，請直接按無法完成", "zh");
+                player.setFilePath(zh_path!);
+                player.play();
+                print("playing");
+              }
+              else{
+                String? zh_path = await processAudioFile("若無法完成，請直接按無法完成", "tw");
+                player.setFilePath(zh_path!);
+                player.play();
+                print("playing");
+              }
             },
             icon: Icon(Icons.volume_up),
           ),

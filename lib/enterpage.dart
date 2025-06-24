@@ -13,11 +13,12 @@ class EnterPage extends StatefulWidget {
 
 class _EnterPageState extends State<EnterPage> {
   int selectedIndex = 0;
+  final ValueNotifier<bool> isZH = ValueNotifier(true);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:selectedIndex == 0 ? HomePage() : ProfilePage(),
+      body:selectedIndex == 0 ? HomePage(isZH: isZH,) : ProfilePage(isZH: isZH,),
       bottomNavigationBar: NavigationBar(
         destinations: [
           NavigationDestination(icon: Icon(Icons.home), label: '首頁'),

@@ -113,7 +113,7 @@ class _GeneralAssessmentPageState extends State<GeneralAssessmentPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SuggestionPage(suggestions: selectedSuggestions),
+        builder: (context) => SuggestionPage(suggestions: selectedSuggestions, isZh: widget.isZh,),
       ),
     );
   }

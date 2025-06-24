@@ -2,11 +2,19 @@ import 'package:flutter/material.dart';
 //import 'package:hyperlink/hyperlink.dart';
 import 'package:icope/suggestionpage.dart';
 
+import 'package:just_audio/just_audio.dart';
+import 'package:icope/tts.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:record/record.dart';
+import 'package:icope/stt.dart';
+
 class SuggestionDetailsPage extends StatefulWidget {
+  final bool isZh;
   final SuggestionItem item;
 
   const SuggestionDetailsPage({
     super.key,
+    required this.isZh,
     required this.item,
   });
 
@@ -16,6 +24,10 @@ class SuggestionDetailsPage extends StatefulWidget {
 
 class _SuggestionDetailsPageState extends State<SuggestionDetailsPage> {
   
+  final player = AudioPlayer();
+  bool isTTS = false;
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,14 +44,39 @@ class _SuggestionDetailsPageState extends State<SuggestionDetailsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 類別
-            Text(
-              '分類：${widget.item.category}',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey[700]),
+            Row(
+              children: [
+                Text(
+                  '分類：${widget.item.category}',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey[700]),
+                ),
+                IconButton(
+                  onPressed: () async {  
+                    //語音
+                    if (widget.isZh){
+                      String? zh_path = await processAudioFile(widget.item.detail, "zh");
+                      player.setFilePath(zh_path!);
+                      player.play();
+                      print("playing");
+                    }
+                    else{
+                      String? zh_path = await processAudioFile(widget.item.detail, "tw");
+                      player.setFilePath(zh_path!);
+                      player.play();
+                      print("playing");
+                    }
+                  },
+                  icon: Icon(Icons.volume_up),
+                ),
+              ],
             ),
             SizedBox(height: 5),
-            Text(
-              '${widget.item.detail}',
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                '${widget.item.detail}',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
             ),
             if (widget.item.imageUrl != null) ...[
               Padding(
@@ -80,12 +117,34 @@ class _SuggestionDetailsPageState extends State<SuggestionDetailsPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("• ${example.text}", 
-                          style: TextStyle(
-                            fontSize: 22, 
-                            fontWeight: FontWeight.bold, 
-                            color: Colors.red,
-                          ),
+                        Row(
+                          children: [
+                            Text("• ${example.text}", 
+                              style: TextStyle(
+                                fontSize: 22, 
+                                fontWeight: FontWeight.bold, 
+                                color: Colors.red,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () async {  
+                                //語音
+                                if (widget.isZh){
+                                  String? zh_path = await processAudioFile(example.text, "zh");
+                                  player.setFilePath(zh_path!);
+                                  player.play();
+                                  print("playing");
+                                }
+                                else{
+                                  String? zh_path = await processAudioFile(example.text, "tw");
+                                  player.setFilePath(zh_path!);
+                                  player.play();
+                                  print("playing");
+                                }
+                              },
+                              icon: Icon(Icons.volume_up),
+                            ),
+                          ],
                         ),
                         SizedBox(height: 10,),
                         if (example.description != null) ...[
@@ -99,6 +158,24 @@ class _SuggestionDetailsPageState extends State<SuggestionDetailsPage> {
                                     style: TextStyle(
                                       fontSize: 20,
                                     ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () async {  
+                                      //語音
+                                      if (widget.isZh){
+                                        String? zh_path = await processAudioFile(example.description!, "zh");
+                                        player.setFilePath(zh_path!);
+                                        player.play();
+                                        print("playing");
+                                      }
+                                      else{
+                                        String? zh_path = await processAudioFile(example.description!, "tw");
+                                        player.setFilePath(zh_path!);
+                                        player.play();
+                                        print("playing");
+                                      }
+                                    },
+                                    icon: Icon(Icons.volume_up),
                                   ),
                                 ],
                               ),

@@ -2,12 +2,20 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'package:just_audio/just_audio.dart';
+import 'package:icope/tts.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:record/record.dart';
+import 'package:icope/stt.dart';
+
 class WalkingSpeedTest extends StatefulWidget {
+  final bool isZh;
   final String questionText;
   final Function(int seconds, int score) onFinished;
 
   const WalkingSpeedTest({
     super.key, 
+    required this.isZh,
     required this.questionText,
     required this.onFinished,
   });
@@ -17,6 +25,10 @@ class WalkingSpeedTest extends StatefulWidget {
 }
 
 class _WalkingSpeedTestState extends State<WalkingSpeedTest> {
+
+  final player = AudioPlayer();
+  bool isTTS = false;
+
   bool _uButtonPressed = false;
   bool _isTiming = false;
   double _seconds = 0.0;
@@ -81,8 +93,20 @@ class _WalkingSpeedTestState extends State<WalkingSpeedTest> {
         SizedBox(height: 5),
         if (!_uButtonPressed) ...[
           IconButton(
-            onPressed: () {
+            onPressed: () async {
               //語音
+              if (widget.isZh){
+                String? zh_path = await processAudioFile("${widget.questionText}, 請選擇測試距離", "zh");
+                player.setFilePath(zh_path!);
+                player.play();
+                print("playing");
+              }
+              else{
+                String? zh_path = await processAudioFile("${widget.questionText}, 請選擇測試距離", "tw");
+                player.setFilePath(zh_path!);
+                player.play();
+                print("playing");
+              }
             },
             icon: Icon(Icons.volume_up),
           ),
@@ -112,11 +136,24 @@ class _WalkingSpeedTestState extends State<WalkingSpeedTest> {
             children: [
               Checkbox(
                 value: _is3m,
-                onChanged: (v) {
+                onChanged: (v) async {
                   if (v != null && v) {
-                    setState(() {
+                    if (widget.isZh){
+                      String? zh_path = await processAudioFile("三公尺", "zh");
+                      player.setFilePath(zh_path!);
+                      player.play();
+                      print("playing");
+                    }
+                    else{
+                      String? zh_path = await processAudioFile("三公尺", "tw");
+                      player.setFilePath(zh_path!);
+                      player.play();
+                      print("playing");
+                    }
+                    setState((){
                       _is3m = true;
                       //語音
+                      
                     });
                   }
                 },
@@ -130,8 +167,20 @@ class _WalkingSpeedTestState extends State<WalkingSpeedTest> {
               ),
               Checkbox(
                 value: !_is3m,
-                onChanged: (v) {
+                onChanged: (v) async {
                   if (v != null && v) {
+                    if (widget.isZh){
+                      String? zh_path = await processAudioFile("四公尺", "zh");
+                      player.setFilePath(zh_path!);
+                      player.play();
+                      print("playing");
+                    }
+                    else{
+                      String? zh_path = await processAudioFile("四公尺", "tw");
+                      player.setFilePath(zh_path!);
+                      player.play();
+                      print("playing");
+                    }
                     setState(() {
                       _is3m = false;
                       //語音
@@ -165,7 +214,19 @@ class _WalkingSpeedTestState extends State<WalkingSpeedTest> {
         ] else ...[
           //SizedBox(height: 5),
           IconButton(
-            onPressed: () {
+            onPressed: () async {
+              if (widget.isZh){
+                String? zh_path = await processAudioFile("若無法完成，請直接按無法完成", "zh");
+                player.setFilePath(zh_path!);
+                player.play();
+                print("playing");
+              }
+              else{
+                String? zh_path = await processAudioFile("若無法完成，請直接按無法完成", "tw");
+                player.setFilePath(zh_path!);
+                player.play();
+                print("playing");
+              }
               //語音
             },
             icon: Icon(Icons.volume_up),
