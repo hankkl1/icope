@@ -58,6 +58,14 @@ class _QuestionsSectionState extends State<QuestionsSection> {
       });
     });
   }
+  
+  void _resetTimer() {
+    _timer?.cancel();
+    setState(() {
+      _seconds = 0.0;
+      _isTiming = false;
+    });
+  }
 
   void _stopTimer() {
     _timer?.cancel();
@@ -225,25 +233,50 @@ class _QuestionsSectionState extends State<QuestionsSection> {
             ),
           ]
           else ...[
-            ElevatedButton(
-              onPressed: () => _stopTimer(),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red[400],
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () => _resetTimer(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green[400],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  child: Text(
+                    "重新計時",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
-              ),
-              child: Text(
-                "停止計時",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                SizedBox(
+                  width: 30,
                 ),
-              ),
+                ElevatedButton(
+                  onPressed: () => _stopTimer(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red[400],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  child: Text(
+                    "停止計時",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
-        ]
+        ],
       ]
     );
   }

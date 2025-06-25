@@ -47,6 +47,8 @@ class SuggestionPage extends StatefulWidget {
 }
 
 class _SuggestionPageState extends State<SuggestionPage> {
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:icope/fullscreenimage.dart';
 //import 'package:hyperlink/hyperlink.dart';
 import 'package:icope/suggestionpage.dart';
-
+import 'youtube_launcher.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:icope/tts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:icope/stt.dart';
+import 'package:icope/noti_service.dart';
 
 class SuggestionDetailsPage extends StatefulWidget {
   final bool isZh;
@@ -30,6 +32,7 @@ class _SuggestionDetailsPageState extends State<SuggestionDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("🔵 目前的 videoUrl: ${widget.item.imageUrl}");
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.indigo),
@@ -81,11 +84,21 @@ class _SuggestionDetailsPageState extends State<SuggestionDetailsPage> {
             if (widget.item.imageUrl != null) ...[
               Padding(
                 padding: const EdgeInsets.all(5),
-                child: Image.asset(
-                  widget.item.imageUrl!,
-                  width: 400,
-                  height: 400,
-                  fit: BoxFit.contain,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => FullScreenImagePage(imagePath: widget.item.imageUrl!),
+                      ),
+                    );
+                  },
+                  child: Image.asset(
+                    widget.item.imageUrl!,
+                    //width: 200,
+                    //height: 200,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
             ],
@@ -95,6 +108,9 @@ class _SuggestionDetailsPageState extends State<SuggestionDetailsPage> {
                 child: TextButton.icon(
                   onPressed: () {
                     // video
+                    String url = widget.item.videoUrl ?? 'https://youtube.com';
+                    print("🔵 呼叫 openYoutube"); // 在 onPressed 中印出來
+                    YoutubeLauncher.openYoutubeUrl(url); // 替換你的影片 ID
                   },
                   icon: Icon(Icons.play_arrow),
                   label: Text(
@@ -141,6 +157,20 @@ class _SuggestionDetailsPageState extends State<SuggestionDetailsPage> {
                                   player.play();
                                   print("playing");
                                 }
+                                if (example.description != null){
+                                  if (widget.isZh){
+                                    String? zh_path = await processAudioFile(example.description!, "zh");
+                                    player.setFilePath(zh_path!);
+                                    player.play();
+                                    print("playing");
+                                  }
+                                  else{
+                                    String? zh_path = await processAudioFile(example.description!, "tw");
+                                    player.setFilePath(zh_path!);
+                                    player.play();
+                                    print("playing");
+                                  }
+                                }
                               },
                               icon: Icon(Icons.volume_up),
                             ),
@@ -159,24 +189,6 @@ class _SuggestionDetailsPageState extends State<SuggestionDetailsPage> {
                                       fontSize: 20,
                                     ),
                                   ),
-                                  IconButton(
-                                    onPressed: () async {  
-                                      //語音
-                                      if (widget.isZh){
-                                        String? zh_path = await processAudioFile(example.description!, "zh");
-                                        player.setFilePath(zh_path!);
-                                        player.play();
-                                        print("playing");
-                                      }
-                                      else{
-                                        String? zh_path = await processAudioFile(example.description!, "tw");
-                                        player.setFilePath(zh_path!);
-                                        player.play();
-                                        print("playing");
-                                      }
-                                    },
-                                    icon: Icon(Icons.volume_up),
-                                  ),
                                 ],
                               ),
                             ),
@@ -187,11 +199,21 @@ class _SuggestionDetailsPageState extends State<SuggestionDetailsPage> {
                           Center(
                             child: Padding(
                               padding: const EdgeInsets.all(5),
-                              child: Image.asset(
-                                example.imageUrl!,
-                                width: 300,
-                                height: 200,
-                                fit: BoxFit.contain,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => FullScreenImagePage(imagePath: example.imageUrl!),
+                                    ),
+                                  );
+                                },
+                                child: Image.asset(
+                                  example.imageUrl!,
+                                  //width: 400,
+                                  //height: 400,
+                                  fit: BoxFit.contain,
+                                ),
                               ),
                             ),
                           ),
@@ -201,7 +223,9 @@ class _SuggestionDetailsPageState extends State<SuggestionDetailsPage> {
                             padding: const EdgeInsets.only(top: 4.0),
                             child: TextButton.icon(
                               onPressed: () {
-                                
+                                String url = example.videoUrl ?? 'https://youtube.com';
+                                print("🔵 呼叫 openYoutube"); // 在 onPressed 中印出來
+                                YoutubeLauncher.openYoutubeUrl(url); // 替換你的影片 ID
                               },
                               icon: Icon(Icons.play_arrow),
                               label: Text(

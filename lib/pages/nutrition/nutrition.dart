@@ -5,7 +5,7 @@ import 'package:icope/homepage.dart';
 import 'package:icope/pages/mobility/mobility.dart';
 import 'package:icope/pages/nutrition/nutrition_forward.dart';
 import 'package:icope/enterpage.dart';
-
+import 'package:icope/noti_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:icope/tts.dart';
 import 'package:path_provider/path_provider.dart';
@@ -24,6 +24,7 @@ class _NutritionState extends State<Nutrition> {
 
   final player = AudioPlayer();
   bool isTTS = false;
+  bool isOK = false;
 
   bool weightEntered = false; //to check whether the user entered weight or not
   bool heightEntered = false; //to check whether the user entered height or not
@@ -54,10 +55,11 @@ class _NutritionState extends State<Nutrition> {
       Widget nextPage;
 
       if (_score >= 1) {
-        message = "您可能有營養風險，建議多加留意。";
+        message = "您可能有營養方面的風險，建議多加留意並進一步檢測";
         nextPage = NutritionForward(isZh: widget.isZh, weight: weight!, height: height!);
       } else {
-        message = "目前無明顯營養風險，請繼續下一步。";
+        isOK = true;
+        message = "目前無明顯營養方面的風險，請每六個月持續追蹤";
         nextPage = EnterPage();
       }
 
@@ -65,18 +67,49 @@ class _NutritionState extends State<Nutrition> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("提醒"),
-            content: Text(message),
+            title: Row(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(top: 8),
+                  child: Icon(Icons.warning_amber),
+                ),
+                SizedBox(width: 6,),
+                Text(
+                  "提醒",
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            content: Text(
+              message,
+              style: TextStyle(
+                fontSize: 20,
+              ),
+            ),
             actions: [
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(); // 關閉對話框
+                  if (isOK) {
+                    NotiService().showNotifications(
+                      title: "通知！",
+                      body: "請六個月後再進行一次檢測，並且持續追蹤",
+                    );
+                  }
+                  Navigator.of(context).pop();
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => nextPage),
                   );
                 },
-                child: Text("確定"),
+                child: Text(
+                  "確定",
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
               ),
             ],
           );
@@ -256,12 +289,13 @@ class _NutritionState extends State<Nutrition> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
-                      Text("目前分數: $_score"),
-                      const SizedBox(height: 10),
-                      Text("你的體重: $weight 公斤"),
-                      const SizedBox(height: 10),
-                      Text("你的身高: $height 公分"),
+                      //debug
+                      //const SizedBox(height: 20),
+                      //Text("目前分數: $_score"),
+                      //const SizedBox(height: 10),
+                      //Text("你的體重: $weight 公斤"),
+                      //const SizedBox(height: 10),
+                      //Text("你的身高: $height 公分"),
                     ],
                   )
                 ]

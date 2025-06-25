@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:icope/enterpage.dart';
 import 'package:icope/pages/mobility/mobility_forward.dart';
 import 'package:icope/homepage.dart';
-
+import 'package:icope/noti_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:icope/tts.dart';
 import 'package:path_provider/path_provider.dart';
@@ -24,6 +24,8 @@ class Mobility extends StatefulWidget {
 class _MobilityState extends State<Mobility> {
   final player = AudioPlayer();
   bool isTTS = false;
+
+  bool isOK = false;
 
   final List<String> _questions = [
     "請輸入您的年齡",
@@ -60,6 +62,14 @@ class _MobilityState extends State<Mobility> {
     });
   }
 
+  void _resetTimer() {
+    _timer?.cancel();
+    setState(() {
+      _seconds = 0.0;
+      _isTiming = false;
+    });
+  }
+
   void _stopTimer() {
     _timer?.cancel();
     setState(() {
@@ -81,10 +91,11 @@ class _MobilityState extends State<Mobility> {
       Widget nextPage;
 
       if (_score >= 1 || (age! < 80 && _seconds > 14) || (age! >= 80 && _seconds > 16)) {
-        message = "您可能有行動風險，建議多加留意。";
+        message = "您可能有行動能力上的風險，建議多加留意並進一步檢測";
         nextPage = MobilityForward(isZh: widget.isZh,);
       } else {
-        message = "目前無明顯行動風險，請繼續下一步。";
+        message = "您目前無明顯行動能力上的風險，請每六個月持續追蹤";
+        isOK = true;
         nextPage = EnterPage();
       }
 
@@ -92,12 +103,21 @@ class _MobilityState extends State<Mobility> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text(
-              "提醒",
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-              ),
+            title: Row(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(top: 8),
+                  child: Icon(Icons.warning_amber),
+                ),
+                SizedBox(width: 6,),
+                Text(
+                  "提醒",
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
             content: Text(
               message,
@@ -108,6 +128,12 @@ class _MobilityState extends State<Mobility> {
             actions: [
               TextButton(
                 onPressed: () {
+                  if (isOK){
+                    NotiService().showNotifications(
+                      title: "通知！",
+                      body: "請六個月後再進行一次檢測，並且持續追蹤",
+                    );
+                  }
                   Navigator.of(context).pop();
                   Navigator.push(
                     context,
@@ -346,13 +372,13 @@ class _MobilityState extends State<Mobility> {
                     onPressed: () async {
                       //語音
                       if (widget.isZh){
-                        String? zh_path = await processAudioFile("若無法完成，請直接按停止計時", "zh");
+                        String? zh_path = await processAudioFile("若已完成或無法完成，都請直接按停止計時", "zh");
                         player.setFilePath(zh_path!);
                         player.play();
                         print("playing");
                       }
                       else{
-                        String? zh_path = await processAudioFile("若無法完成，請直接按停止計時", "tw");
+                        String? zh_path = await processAudioFile("若已完成或無法完成，都請直接按停止計時", "tw");
                         player.setFilePath(zh_path!);
                         player.play();
                         print("playing");
@@ -361,7 +387,7 @@ class _MobilityState extends State<Mobility> {
                     icon: Icon(Icons.volume_up),
                   ),
                   Text(
-                    "若無法完成，請直接按停止計時",
+                    "若已完成或無法完成，都請直接按停止計時",
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -416,22 +442,47 @@ class _MobilityState extends State<Mobility> {
                     ),
                   ]
                   else ...[
-                    ElevatedButton(
-                      onPressed: () => _answer(true),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red[400],
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () => _resetTimer(),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green[400],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                          child: Text(
+                            "重新計時",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
-                      ),
-                      child: Text(
-                        "停止計時",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                        SizedBox(
+                          width: 30,
                         ),
-                      ),
+                        ElevatedButton(
+                          onPressed: () => _answer(true),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red[400],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                          child: Text(
+                            "停止計時",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                   SizedBox(height: 10),

@@ -118,37 +118,6 @@ class  HomePageState extends State <HomePage> {
                     SizedBox(
                       height: 25,
                     ),
-
-                    ElevatedButton(
-                      onPressed: () {
-                        NotiService().scheduleNotification(
-                          title: "title",
-                          body: "body",
-                          scheduledDate: DateTime.now().add(Duration(seconds: 2)),
-                        );
-
-                      }, 
-                      child: Text("send"),
-                    ),
-                    SizedBox(
-                      height: 25,
-                    ),
-
-                    ElevatedButton(
-                      onPressed: () {
-                        NotiService().showNotifications(
-                          title: "title",
-                          body: "body",
-                        );
-
-                      }, 
-                      child: Text("send"),
-                    ),
-
-                    SizedBox(
-                      height: 25,
-                    ),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -158,7 +127,19 @@ class  HomePageState extends State <HomePage> {
                           color: Colors.lightBlue[300]!, 
                           icon: Icons.fastfood, 
                           label: "營養", 
-                          onTap: () {
+                          onTap: () async {
+                            if (widget.isZH.value){
+                              String? zh_path = await processAudioFile("現在進到營養檢測", "zh");
+                              player.setFilePath(zh_path!);
+                              player.play();
+                              print("playing");
+                            }
+                            else{
+                              String? zh_path = await processAudioFile("現在進到營養檢測", "tw");
+                              player.setFilePath(zh_path!);
+                              player.play();
+                              print("playing");
+                            }
                             //語音
                             Navigator.push(context, MaterialPageRoute(builder:(context) => Nutrition(isZh: widget.isZH.value,)));
                           },
@@ -173,8 +154,20 @@ class  HomePageState extends State <HomePage> {
                           color: Colors.amber[300]!, 
                           icon: Icons.assist_walker, 
                           label: "行動", 
-                          onTap: () {
+                          onTap: () async {
                             //語音
+                            if (widget.isZH.value){
+                              String? zh_path = await processAudioFile("現在進到行動檢測", "zh");
+                              player.setFilePath(zh_path!);
+                              player.play();
+                              print("playing");
+                            }
+                            else{
+                              String? zh_path = await processAudioFile("現在進到行動檢測", "tw");
+                              player.setFilePath(zh_path!);
+                              player.play();
+                              print("playing");
+                            }
                             Navigator.push(context, MaterialPageRoute(builder:(context) => Mobility(isZh: widget.isZH.value,)));
                           },
                         ),

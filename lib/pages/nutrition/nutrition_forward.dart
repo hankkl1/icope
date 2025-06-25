@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:icope/pages/nutrition/generalassesment.dart';
-
+import 'package:icope/enterpage.dart';
+import 'package:icope/noti_service.dart';
+import 'package:icope/suggestionpage.dart';
+import 'package:icope/suggestionsdata.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:icope/tts.dart';
 import 'package:path_provider/path_provider.dart';
@@ -71,11 +74,15 @@ class _NutritionForwardState extends State<NutritionForward> {
     ),
   ];
 
-  final Map<int, int> _answers = {};
+  late List<bool> _answered = List.filled(_questions.length, false);
+  List<SuggestionItem> selectedSuggestions = [];
 
+  final Map<int, int> _answers = {};
+  
   void _onAnswer(int questionIndex, int score) {
     setState(() {
       _answers[questionIndex] = score;
+      _answered[questionIndex] = true;
     });
   }
   
@@ -179,6 +186,7 @@ class _NutritionForwardState extends State<NutritionForward> {
                             },
                           ),
                           onTap: () async {
+                            // 播放語音
                             if (widget.isZh){
                               String? zh_path = await processAudioFile(option.text, "zh");
                               player.setFilePath(zh_path!);
@@ -192,7 +200,6 @@ class _NutritionForwardState extends State<NutritionForward> {
                               print("playing");
                             }
                             _onAnswer(index, option.score);
-                            // 播放語音
                           },
                         );
                       }).toList(),
@@ -206,24 +213,110 @@ class _NutritionForwardState extends State<NutritionForward> {
             padding: EdgeInsets.all(16.0),
             child: TextButton(
               onPressed: () {
-                _totalScore = _scoreSum + _bmiScore();
-                if (_totalScore <= 11) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => GeneralAssessmentPage(isZh: widget.isZh, previousScore: _totalScore, BMI: widget.weight / (widget.height * widget.height / 10000),)),
-                  );
+                bool allAnswered = _answered.every((ans) => ans);
+
+                if (allAnswered) {
+                  _totalScore = _scoreSum + _bmiScore();
+                  if (_totalScore <= 11) { //into general assesment
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => GeneralAssessmentPage(isZh: widget.isZh, previousScore: _totalScore, BMI: widget.weight / (widget.height * widget.height / 10000),)),
+                    );
+                  } 
+                  else {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext content) {
+                        return AlertDialog (
+                          title: Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(top: 8),
+                                child: Icon(Icons.warning_amber),
+                              ),
+                              SizedBox(width: 6,),
+                              Text(
+                                "提醒",
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          content: Text(
+                            "目前暫無營養不良危險性，請三個月後再次篩檢",
+                            style: TextStyle(
+                              fontSize: 20,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                NotiService().showNotifications(
+                                  title: "通知！",
+                                  body: "請三月後再進行一次檢測，並且持續追蹤",
+                                );
+
+                                selectedSuggestions.addAll(suggestionGroups['nutrition_education_normal'] ?? []);
+                                selectedSuggestions.addAll(suggestionGroups['normal_nutrition'] ?? []);
+                                
+
+                                Navigator.of(context).pop();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => SuggestionPage(suggestions: selectedSuggestions, isZh: widget.isZh,)),
+                                );
+                              },
+                              child: Text(
+                                "確定",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    );
+                  }
                 } 
                 else {
                   showDialog(
                     context: context,
-                    builder: (_) => AlertDialog(
-                      title: const Text("總分"),
-                      content: Text("你的總分是 $_totalScore（含 BMI 分數）\n→ 無需進一步一般評估"),
+                    builder: (context) => AlertDialog(
+                      title: Row(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: 8),
+                            child: Icon(Icons.warning_amber),
+                          ),
+                          SizedBox(width: 6,),
+                          Text(
+                            "尚有未完成的題目！",
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      content: Text(
+                        "請完成所有問題後再繼續",
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                      ),
                       actions: [
                         TextButton(
-                          child: const Text("關閉"),
                           onPressed: () => Navigator.pop(context),
-                        )
+                          child: Text(
+                            "確定",
+                            style: TextStyle(
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   );

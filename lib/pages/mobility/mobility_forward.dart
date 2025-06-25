@@ -24,7 +24,6 @@ class MobilityForward extends StatefulWidget {
 class _MobilityForwardState extends State<MobilityForward> {
   final player = AudioPlayer();
   bool isTTS = false;
-
   bool balanceTest = true;
 
   final List<String> _questions = [
@@ -47,14 +46,25 @@ class _MobilityForwardState extends State<MobilityForward> {
   void _completeTest(){
       
     List<SuggestionItem> selectedSuggestions = [];
-    selectedSuggestions.addAll(suggestionGroups['normal_mobility'] ?? []);
-    selectedSuggestions.addAll(suggestionGroups['muscle_strength'] ?? []);
-    if (_score <= 9) {
-      selectedSuggestions.addAll(suggestionGroups['limited_mobility'] ?? []);
-    } 
-    else {
-      
+    selectedSuggestions.addAll(suggestionGroups['health_education_normal'] ?? []);
+    if ( _score <= 3) {
+      selectedSuggestions.addAll(suggestionGroups['health_education_limit1'] ?? []);
+      selectedSuggestions.addAll(suggestionGroups['health_education_limit2'] ?? []);
+      selectedSuggestions.addAll(suggestionGroups['health_education_limit3'] ?? []);
+
     }
+    else if ( _score <= 6){
+      selectedSuggestions.addAll(suggestionGroups['health_education_limit1'] ?? []);
+      selectedSuggestions.addAll(suggestionGroups['health_education_limit2'] ?? []);
+    } 
+    else if ( _score <= 9) {
+      selectedSuggestions.addAll(suggestionGroups['health_education_limit1'] ?? []);
+    }
+
+
+    selectedSuggestions.addAll(suggestionGroups['exercise'] ?? []);
+    selectedSuggestions.addAll(suggestionGroups['balance'] ?? []);
+    selectedSuggestions.addAll(suggestionGroups['muscle_strength'] ?? []);
     
     EnterPage.historyItems.add(selectedSuggestions);
 
@@ -65,6 +75,45 @@ class _MobilityForwardState extends State<MobilityForward> {
       ),
     );
   }
+
+  Widget buildDialogContent(int seconds) {
+    if (seconds >= 60) {
+      return Text(
+        "不太好！您花了 $seconds 秒才完成",
+        style: TextStyle(
+          fontSize: 20,
+        ),
+      );
+    } else if (seconds >= 16.7) {
+      return Text(
+        "再加強！您一共花了 $seconds 秒完成",
+        style: TextStyle(
+          fontSize: 20,
+        ),
+      );
+    } else if (seconds >= 13.7) {
+      return Text(
+        "還可以！您一共花了 $seconds 秒完成",
+        style: TextStyle(
+          fontSize: 20,
+        ),
+      );
+    } else if (seconds >= 11.2) {
+      return Text(
+        "還不錯！您一共花了 $seconds 秒完成",
+        style: TextStyle(
+          fontSize: 20,
+        ),
+      );
+    } else {
+      return Text(
+        "非常好！您只花了 $seconds 秒",
+        style: TextStyle(
+          fontSize: 20,
+        ),
+      );
+    }
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -72,7 +121,7 @@ class _MobilityForwardState extends State<MobilityForward> {
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.indigo),
         title: Text(
-          "進一步檢測",
+          "進階檢測",
           style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
         ),
       ),
@@ -109,12 +158,44 @@ class _MobilityForwardState extends State<MobilityForward> {
                   showDialog(
                     context: context,
                     builder: (_) => AlertDialog(
-                      title: Text("完成"),
-                      content: Text("您站立了 $seconds 秒"),
+                      title: Row(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: 4),
+                            child: Icon(Icons.done),
+                          ),
+                          SizedBox(width: 6,),
+                          Text(
+                            "完成！",
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      content: seconds >= 10
+                      ? Text(
+                        "非常好！您完整站立了 $seconds 秒",
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                      )
+                      : Text(
+                        "需要加強！您只站立了 $seconds 秒",
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                      ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.of(context).pop(),
-                          child: Text("確定"),
+                          child: Text(
+                            "確定",
+                            style: TextStyle(
+                              fontSize: 18,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -134,12 +215,37 @@ class _MobilityForwardState extends State<MobilityForward> {
                   showDialog(
                     context: context,
                     builder: (_) => AlertDialog(
-                      title: Text("完成"),
-                      content: Text("您行走了 ${seconds.toStringAsFixed(2)} 秒"),
+                      title: Row(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: 8),
+                            child: Icon(Icons.done),
+                          ),
+                          SizedBox(width: 6,),
+                          Text(
+                            "結束！",
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      content: Text(
+                        "您一共行走了 ${seconds.toStringAsFixed(2)} 秒",
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                      ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.of(context).pop(),
-                          child: Text("確定"),
+                          child: Text(
+                            "確定",
+                            style: TextStyle(
+                              fontSize: 18,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -159,12 +265,32 @@ class _MobilityForwardState extends State<MobilityForward> {
                   showDialog(
                     context: context,
                     builder: (_) => AlertDialog(
-                      title: Text("完成"),
-                      content: Text("您站立了 $seconds 秒"),
+                      title: Row(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: 4),
+                            child: Icon(Icons.done),
+                          ),
+                          SizedBox(width: 6,),
+                          Text(
+                            "完成！",
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      content: buildDialogContent(seconds),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.of(context).pop(),
-                          child: Text("確定"),
+                          child: Text(
+                            "確定",
+                            style: TextStyle(
+                              fontSize: 18,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -172,8 +298,8 @@ class _MobilityForwardState extends State<MobilityForward> {
                 },
               )
             ],
-            SizedBox(height: 20),
-            Text("分數: $_score"),
+            //SizedBox(height: 20),
+            //Text("分數: $_score"),
           ],
         ),
       ),

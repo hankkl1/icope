@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:icope/noti_service.dart';
 import 'package:icope/suggestionpage.dart';
 import 'package:icope/suggestionsdata.dart';
 import 'package:icope/enterpage.dart';
@@ -51,6 +52,8 @@ class _GeneralAssessmentPageState extends State<GeneralAssessmentPage> {
     Question('您的小腿圍（CC）', ['小於31公分', '大於等於31公分'], [0, 1]),
   ];
 
+  late List<bool> _answered = List.filled(_questions.length, false);
+
   final Map<int, dynamic> _answers = {};
 
   double get _score => _answers.entries.fold(0, (sum, entry) {
@@ -71,51 +74,157 @@ class _GeneralAssessmentPageState extends State<GeneralAssessmentPage> {
   List<SuggestionItem>? get selectedSuggestions => null;
 
   void _submit() {
-    print(widget.previousScore);
 
-    //protein check
-    final proteinSet = _answers[4] as Set<int>? ?? {};
-    double proteinTotal = 0;
-    for (final i in proteinSet) {
-      proteinTotal += _questions[4].scores[i];
-    }
-    hasProteinDeficiencyRisk = proteinTotal <= 0.5;
+    _answered[4] = true;
+    bool allAnswered = _answered.every((ans) => ans);
 
-    //vegFruit check
-    final vegFruitChoice = _answers[5];
-    hasLowVegFruitIntake = (vegFruitChoice != null && _questions[5].scores[vegFruitChoice] == 0);
+    if (!allAnswered) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Row(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: Icon(Icons.warning_amber),
+              ),
+              SizedBox(width: 6,),
+              Text(
+                "尚有未完成的題目！",
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            "請完成所有問題後再繼續",
+            style: TextStyle(
+              fontSize: 20,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                "確定",
+                style: TextStyle(
+                  fontSize: 18,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    else{
+      print(widget.previousScore);
 
-    //score and results
-    double _totalScore = _score + widget.previousScore;
-    List<SuggestionItem> selectedSuggestions = [];
+      //protein check
+      final proteinSet = _answers[4] as Set<int>? ?? {};
+      double proteinTotal = 0;
+      for (final i in proteinSet) {
+        proteinTotal += _questions[4].scores[i];
+      }
+      hasProteinDeficiencyRisk = proteinTotal <= 0.5;
 
-    if (_totalScore <= 17){
-      print("營養不良");
-      selectedSuggestions.addAll(suggestionGroups['malnutrition'] ?? []);
-    }
-    else if (_totalScore <=23){
-      print("有營養不良危險");
-      selectedSuggestions.addAll(suggestionGroups['at_risk_nutrition'] ?? []);
-    }
-    else {
-      print("營養狀況良好");
-      selectedSuggestions.addAll(suggestionGroups['normal_nutrition'] ?? []);
-    }
-    
-    if (hasLowVegFruitIntake){
-      selectedSuggestions.addAll(suggestionGroups['vegfruit_risk'] ?? []);
-    }
-    else if (hasProteinDeficiencyRisk){
-      selectedSuggestions.addAll(suggestionGroups['protein_risk'] ?? []);
-    }
+      //vegFruit check
+      final vegFruitChoice = _answers[5];
+      hasLowVegFruitIntake = (vegFruitChoice != null && _questions[5].scores[vegFruitChoice] == 0);
 
-    EnterPage.historyItems.add(selectedSuggestions!);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SuggestionPage(suggestions: selectedSuggestions, isZh: widget.isZh,),
-      ),
-    );
+      //score and results
+      double _totalScore = _score + widget.previousScore;
+      List<SuggestionItem> selectedSuggestions = [];
+      String message;
+      String message2;
+
+      if (_totalScore <= 17){
+        print("營養不良");
+        message = "您可能有營養不良的風險，建議加強介入並且1週後再次追蹤";
+        message2 = "1週";
+        selectedSuggestions.addAll(suggestionGroups['nutrition_education_normal'] ?? []);
+        selectedSuggestions.addAll(suggestionGroups['nutrition_education_limited'] ?? []);
+        selectedSuggestions.addAll(suggestionGroups['nutrition_education_highRisk'] ?? []);
+        selectedSuggestions.addAll(suggestionGroups['at_risk_nutrition'] ?? []);
+      }
+      else if (_totalScore <=23){
+        print("有營養不良危險");
+        message = "您可能有營養方面的風險，建議4週後再次追蹤";
+        message2 = "4週";
+        selectedSuggestions.addAll(suggestionGroups['nutrition_education_normal'] ?? []);
+        selectedSuggestions.addAll(suggestionGroups['nutrition_education_limited'] ?? []);
+        selectedSuggestions.addAll(suggestionGroups['at_risk_nutrition'] ?? []);
+      }
+      else {
+        print("營養狀況良好");
+        message = "您目前營養狀況良好，建議3個月後再次追蹤";
+        message2 = "3個月";
+        selectedSuggestions.addAll(suggestionGroups['nutrition_education_normal'] ?? []);
+        selectedSuggestions.addAll(suggestionGroups['normal_nutrition'] ?? []);
+      }
+      
+      if (hasLowVegFruitIntake){
+        selectedSuggestions.addAll(suggestionGroups['vegfruit_risk'] ?? []);
+      }
+      else if (hasProteinDeficiencyRisk){
+        selectedSuggestions.addAll(suggestionGroups['protein_risk'] ?? []);
+      }
+
+      EnterPage.historyItems.add(selectedSuggestions!);
+
+      showDialog(
+        context: context,
+        builder: (BuildContext content) {
+          return AlertDialog (
+            title: Row(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(top: 8),
+                  child: Icon(Icons.warning_amber),
+                ),
+                SizedBox(width: 6,),
+                Text(
+                  "提醒",
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            content: Text(
+              message,
+              style: TextStyle(
+                fontSize: 20,
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  NotiService().showNotifications(
+                    title: "通知！",
+                    body: "請${message2}後再進行一次檢測，並且持續追蹤",
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SuggestionPage(suggestions: selectedSuggestions, isZh: widget.isZh,),
+                    ),
+                  );
+                },
+                child: Text(
+                  "確定",
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+            ],
+          );
+        }
+      );
+    }
   }
 
   @override
@@ -209,6 +318,7 @@ class _GeneralAssessmentPageState extends State<GeneralAssessmentPage> {
                                   } else {
                                     _answers[index].remove(i);
                                   }
+                                  //_answered[index] = true;
                                 });
                               },
                             );
@@ -242,6 +352,7 @@ class _GeneralAssessmentPageState extends State<GeneralAssessmentPage> {
                                 }
                                 setState(() {
                                   _answers[index] = val;
+                                  _answered[index] = true;
                                 });
                                 // 語音
                               },
