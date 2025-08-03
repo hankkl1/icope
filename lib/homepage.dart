@@ -179,25 +179,55 @@ class  HomePageState extends State <HomePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: Colors.purple[200],
-                          ),
+                        FunctionSection(
                           width: sectionWidth,
                           height: sectionHeight,
+                          color: Colors.purple[200]!, 
+                          icon: Icons.remove_red_eye, 
+                          label: "視力", 
+                          onTap: () async {
+                            if (widget.isZH.value){
+                              String? zh_path = await processAudioFile("現在進到視力檢測", "zh");
+                              player.setFilePath(zh_path!);
+                              player.play();
+                              print("playing");
+                            }
+                            else{
+                              String? zh_path = await processAudioFile("現在進到視力檢測", "tw");
+                              player.setFilePath(zh_path!);
+                              player.play();
+                              print("playing");
+                            }
+                            //語音
+                            Navigator.push(context, MaterialPageRoute(builder:(context) => Nutrition(isZh: widget.isZH.value,)));
+                          },
                         ),
                         SizedBox(
                           width: 5,
                         ),
                         //Mobility
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: Colors.lime[200],
-                          ),
+                        FunctionSection(
                           width: sectionWidth,
                           height: sectionHeight,
+                          color: Colors.lime[200]!, 
+                          icon: Icons.hearing, 
+                          label: "聽力", 
+                          onTap: () async {
+                            //語音
+                            if (widget.isZH.value){
+                              String? zh_path = await processAudioFile("現在進到聽力檢測", "zh");
+                              player.setFilePath(zh_path!);
+                              player.play();
+                              print("playing");
+                            }
+                            else{
+                              String? zh_path = await processAudioFile("現在進到聽力檢測", "tw");
+                              player.setFilePath(zh_path!);
+                              player.play();
+                              print("playing");
+                            }
+                            Navigator.push(context, MaterialPageRoute(builder:(context) => Mobility(isZh: widget.isZH.value,)));
+                          },
                         ),
                       ],
                     ),

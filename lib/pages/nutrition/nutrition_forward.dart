@@ -261,6 +261,7 @@ class _NutritionForwardState extends State<NutritionForward> {
                                 selectedSuggestions.addAll(suggestionGroups['nutrition_education_normal'] ?? []);
                                 selectedSuggestions.addAll(suggestionGroups['normal_nutrition'] ?? []);
                                 
+                                EnterPage.historyItems.add(selectedSuggestions!);
 
                                 Navigator.of(context).pop();
                                 Navigator.push(
