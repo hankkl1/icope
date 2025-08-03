@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class Vision extends StatefulWidget {
-  const Vision({super.key});
+  final bool isZh;
+  const Vision({super.key, required this.isZh});
 
   @override
   State<Vision> createState() => _VisionState();

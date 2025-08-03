@@ -2,8 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:icope/noti_service.dart';
+import 'package:icope/pages/hearing/hearing.dart';
 import 'package:icope/pages/nutrition/nutrition.dart';
 import 'package:icope/pages/mobility/mobility.dart';
+import 'package:icope/pages/vision/vision.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:icope/tts.dart';
 import 'package:path_provider/path_provider.dart';
@@ -186,6 +188,8 @@ class  HomePageState extends State <HomePage> {
                           icon: Icons.remove_red_eye, 
                           label: "視力", 
                           onTap: () async {
+                            //語音
+                            /*
                             if (widget.isZH.value){
                               String? zh_path = await processAudioFile("現在進到視力檢測", "zh");
                               player.setFilePath(zh_path!);
@@ -198,8 +202,8 @@ class  HomePageState extends State <HomePage> {
                               player.play();
                               print("playing");
                             }
-                            //語音
-                            Navigator.push(context, MaterialPageRoute(builder:(context) => Nutrition(isZh: widget.isZH.value,)));
+                            */
+                            Navigator.push(context, MaterialPageRoute(builder:(context) => Vision(isZh: widget.isZH.value,)));
                           },
                         ),
                         SizedBox(
@@ -214,6 +218,7 @@ class  HomePageState extends State <HomePage> {
                           label: "聽力", 
                           onTap: () async {
                             //語音
+                            /*
                             if (widget.isZH.value){
                               String? zh_path = await processAudioFile("現在進到聽力檢測", "zh");
                               player.setFilePath(zh_path!);
@@ -226,7 +231,8 @@ class  HomePageState extends State <HomePage> {
                               player.play();
                               print("playing");
                             }
-                            Navigator.push(context, MaterialPageRoute(builder:(context) => Mobility(isZh: widget.isZH.value,)));
+                            */
+                            Navigator.push(context, MaterialPageRoute(builder:(context) => Hearing(isZh: widget.isZH.value,)));
                           },
                         ),
                       ],

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class Hearing extends StatefulWidget {
-  const Hearing({super.key});
+  final bool isZh;
+  const Hearing({super.key, required this.isZh});
 
   @override
   State<Hearing> createState() => _HearingState();
